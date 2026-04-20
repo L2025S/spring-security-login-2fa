@@ -26,7 +26,8 @@ public class SecurityConfig {
         httpSecurity
                 .authorizeHttpRequests(authorizeRequests ->authorizeRequests
                         .requestMatchers("/register","/register/submit",
-                                "/login","/verify-2fa", "/verify-2fa/submit").permitAll()
+                                "/login","/verify-2fa", "/verify-2fa/submit",
+                                "/qrcode","/qrcode/image").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form->form
@@ -46,11 +47,7 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
 
-        return new BCryptPasswordEncoder();
-    }
 
 
 }

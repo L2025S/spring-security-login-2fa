@@ -19,6 +19,8 @@ import se.iths.lw.springsecuritylogin2fa.model.AppUser;
 import se.iths.lw.springsecuritylogin2fa.service.AppUserService;
 import se.iths.lw.springsecuritylogin2fa.service.TwoFactorService;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 @Controller
@@ -38,14 +40,15 @@ public class AuthController {
     public String registerUser(
             @Valid @ModelAttribute("userDto") UserRegistrationDto userDto,
             BindingResult bindingResult,
-            @RequestParam(value="twoFactorEnabled", defaultValue="false") boolean twoFactorEnabled,
-            Model model) {
+            Model model,
+            HttpSession httpSession
+    ) {
         if(bindingResult.hasErrors()){
             return "register";
         }
         try{
             String secret = null;
-            if(twoFactorEnabled){
+            if(userDto.isTwoFactorEnabled()){
                 secret = twoFactorService.generateSecret();
             }
             appUserService.registerNewUser(
@@ -56,8 +59,11 @@ public class AuthController {
                     secret
             );
 
-            if(twoFactorEnabled){
-                return String.format("redirect:/qrcode?username=%s&secret=%s",userDto.getUsername(),secret);
+            if(userDto.isTwoFactorEnabled()){
+                httpSession.setAttribute("tempQrSecret",secret);
+                String encodedUsername = URLEncoder.encode(userDto.getUsername(), StandardCharsets.UTF_8);
+
+                return "redirect:/qrcode?username="+encodedUsername;
             }
             return "redirect:/login?registered";
         } catch(Exception e){
@@ -69,18 +75,30 @@ public class AuthController {
 
     @GetMapping("/qrcode")
     public String showQrCode(@RequestParam String username,
-                             @RequestParam String secret,
+                             HttpSession httpSession,
                              Model model) {
+        String secret = (String)httpSession.getAttribute("tempQrSecret");
+        if(secret == null){
+            return "redirect:/register?error=noSecret";
+        }
         model.addAttribute("username", username);
         model.addAttribute("secret", secret);
         return "qrcode";
     }
+
     @GetMapping("/qrcode/image")
     @ResponseBody
-    public ResponseEntity<byte[]> getQrCodeImage(@RequestParam String username,
-                                                 @RequestParam String secret){
+    public ResponseEntity<byte[]> getQrCodeImage(
+            HttpSession httpSession,
+            @RequestParam String username){
+
+        String secret=(String)httpSession.getAttribute("tempQrSecret");
+        if(secret == null){
+            return ResponseEntity.badRequest().build();
+        }
+
         String issuer ="Spring Security Login 2FA";
-        String otpUri = twoFactorService.getOtpAuthUri(secret, username,issuer);
+        String otpUri = twoFactorService.getOtpAuthUri(secret, username, issuer);
         byte[] qrCode = twoFactorService.generateQrCodeImage(otpUri, 200,200);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)

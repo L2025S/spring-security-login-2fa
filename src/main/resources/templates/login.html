@@ -12,7 +12,9 @@
 <br/>
 <label>Password:</label>
 <input type="password" name="password" required><br/>
+    <button type="submit">Login</button>
 </form>
+
 <p th:if="${param.error}" style="color:red">Invalid credentials</p>
 <p th:if="${param.logout}" style="color:green">Logged out</p>
 <p th:if="${param.registered}" style="color:green">Registration successful, please login</p>
