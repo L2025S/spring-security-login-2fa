@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+<h2>Register</h2>
+<form th:action="@{/register/submit}" th:object="${appUser}" method="post">
+    <label>Username:</label>
+    <input type="text" th:field="*{username}" required/> <br/>
+    <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span> <br/>
+
+    <label>Password:</label>
+    <input type="password" th:field="*{password}" required/> <br/>
+    <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span> <br/>
+
+    <label>Email:</label>
+    <input type="email" th:field="*{email}" required/> <br/>
+    <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br/>
+
+    <label>Enable 2FA:</label>
+    <input type="checkbox" name="twoFactorEnabled" value="true"/><br/>
+    <button type="submit">Register</button>
+</form>
+<p th:if="${error}" th:text="${error}" style="color:red"></p>
+
+</body>
+</html>

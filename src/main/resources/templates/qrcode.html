@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan QR Code</title>
+</head>
+<body>
+<h2>Scan the QR code with your authenticator app</h2>
+<img th:src="@{/qrcode/image(username=${username},secret=${secret})}" alt="QR Code" />
+<p>After scanning, you can log in.</p>
+<a href="/login">Go to log in</a>
+</body>
+</html>
