@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import se.iths.lw.springsecuritylogin2fa.dto.UserRegistrationDto;
 import se.iths.lw.springsecuritylogin2fa.model.AppUser;
 import se.iths.lw.springsecuritylogin2fa.service.AppUserService;
 import se.iths.lw.springsecuritylogin2fa.service.TwoFactorService;
@@ -29,13 +30,13 @@ public class AuthController {
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model){
-        model.addAttribute("appUser", new AppUser());
+        model.addAttribute("userDto", new UserRegistrationDto());
         return "register";
     }
 
     @PostMapping("/register/submit")
     public String registerUser(
-            @Valid @ModelAttribute("appUser") AppUser appUser,
+            @Valid @ModelAttribute("userDto") UserRegistrationDto userDto,
             BindingResult bindingResult,
             @RequestParam(value="twoFactorEnabled", defaultValue="false") boolean twoFactorEnabled,
             Model model) {
@@ -48,14 +49,15 @@ public class AuthController {
                 secret = twoFactorService.generateSecret();
             }
             appUserService.registerNewUser(
-                    appUser.getUsername(),
-                    appUser.getPassword(),
-                    twoFactorEnabled,
+                    userDto.getUsername(),
+                    userDto.getPassword(),
+                    userDto.getEmail(),
+                    userDto.isTwoFactorEnabled(),
                     secret
             );
 
             if(twoFactorEnabled){
-                return "redirect:/qrcode?username="+appUser.getUsername() +"&secret=" +secret;
+                return String.format("redirect:/qrcode?username=%s&secret=%s",userDto.getUsername(),secret);
             }
             return "redirect:/login?registered";
         } catch(Exception e){

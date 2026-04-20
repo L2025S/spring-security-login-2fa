@@ -6,7 +6,7 @@
 </head>
 <body>
 <h2>Register</h2>
-<form th:action="@{/register/submit}" th:object="${appUser}" method="post">
+<form th:action="@{/register/submit}" th:object="${userDto}" method="post">
     <label>Username:</label>
     <input type="text" th:field="*{username}" required/> <br/>
     <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span> <br/>
@@ -20,7 +20,7 @@
     <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br/>
 
     <label>Enable 2FA:</label>
-    <input type="checkbox" name="twoFactorEnabled" value="true"/><br/>
+    <input type="checkbox" th:field="*{twoFactorEnabled}"/><br/>
     <button type="submit">Register</button>
 </form>
 <p th:if="${error}" th:text="${error}" style="color:red"></p>

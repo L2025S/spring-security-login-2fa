@@ -27,7 +27,9 @@ public class AppUserService {
     @Transactional
     public void registerNewUser(String username,
                                 String password,
-                                boolean twoFactorEnabled, String secret)
+                                String email,
+                                boolean twoFactorEnabled,
+                                String secret)
     {
         if(appUserRepository.findByUsername(username).isPresent()) {
             throw new UserAlreadyExistsException("Username already exists: " + username);
@@ -36,6 +38,7 @@ public class AppUserService {
         AppUser appUser = new AppUser();
         appUser.setUsername(username);
         appUser.setPassword(passwordEncoder.encode(password));
+        appUser.setEmail(email);
         appUser.setTwoFactorEnabled(twoFactorEnabled);
         appUser.setSecret(secret);
         appUser.setRole("ROLE_USER");
