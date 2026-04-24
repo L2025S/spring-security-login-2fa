@@ -30,7 +30,7 @@ public class TwoFactorService {
 
     public byte[] generateQrCodeImage(String text, int width, int height){
         try {
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE,width, height);
 
         ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
@@ -43,6 +43,7 @@ public class TwoFactorService {
     }
 
     public boolean verifyTotpCode(String secret, int code){
-        return googleAuthenticator.authorize(secret, code);
+        return
+                googleAuthenticator.authorize(secret, code);
     }
 }

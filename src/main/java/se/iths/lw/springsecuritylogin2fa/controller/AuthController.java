@@ -97,7 +97,7 @@ public class AuthController {
             return ResponseEntity.badRequest().build();
         }
 
-        String issuer ="Spring Security Login 2FA";
+        String issuer ="SpringSecurityLogi2FA";
         String otpUri = twoFactorService.getOtpAuthUri(secret, username, issuer);
         byte[] qrCode = twoFactorService.generateQrCodeImage(otpUri, 200,200);
         return ResponseEntity.ok()
